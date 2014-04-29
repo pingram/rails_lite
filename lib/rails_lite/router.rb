@@ -58,6 +58,8 @@ class Router
   # evaluate the proc in the context of the instance
   # for syntactic sugar :)
   def draw(&proc)
+    self.instance_eval(&proc)
+    self
   end
 
   # make each of these methods that
@@ -77,8 +79,22 @@ class Router
 
   # either throw 404 or call run on a matched route
   def run(req, res)
-    res.status = 404 if self.match(req).nil?
+    matching_route = self.match(req)
+    if matching_route.nil?
+      res.status = 404
+      return
+    end
+    matching_route.run(req, res)
   end
 end
 
 # p index_route = Route.new(Regexp.new("^/users$"), :get, "x", :x)
+# class StatusesController; end
+
+# router = Router.new
+# router.draw do
+#   post Regexp.new("^/statuses$"), StatusesController, :create
+#   get Regexp.new("^/statuses/new$"), StatusesController, :new
+# end
+
+# p router
