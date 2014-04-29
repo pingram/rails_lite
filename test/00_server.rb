@@ -25,6 +25,8 @@ end
 
 server.mount_proc '/' do |req, res|
 	# res.body = 'hello from my server!'
+	# res.content_type = 'text/text'
+	# res.body = "#{req.path}"
   MyController.new(req, res).go
 end
 
