@@ -1,16 +1,41 @@
+# require 'ndebug'
+
 class Route
   attr_reader :pattern, :http_method, :controller_class, :action_name
 
   def initialize(pattern, http_method, controller_class, action_name)
+    @pattern = pattern
+    @http_method = http_method
+    @controller_class = controller_class
+    @action_name = action_name
   end
 
   # checks if pattern matches path and method matches request method
   def matches?(req)
+    req_method = req.request_method.downcase.to_sym
+    req_path = req.path
+
+    if !@pattern.match(req_path).nil? && @http_method == req_method
+      true
+    else
+      false
+    end
   end
 
   # use pattern to pull out route params (save for later?)
   # instantiate controller and call controller action
   def run(req, res)
+    all_route_params = req.path.gsub(@pattern, '')
+    route_path = req.path.gsub(all_route_params, '')
+    route_params = {}
+    # XXX come back to this
+
+    # p route_params
+    # need to call constantize to get the class name
+    # controller_class_str = (route_path.gsub('/','') + "_controller").classify
+    my_controller = @controller_class.new(req, res, route_params)
+    my_controller.invoke_action(@action_name)
+
   end
 end
 
@@ -42,3 +67,5 @@ class Router
   def run(req, res)
   end
 end
+
+# p index_route = Route.new(Regexp.new("^/users$"), :get, "x", :x)
