@@ -40,6 +40,16 @@ class ControllerBase
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
   def render(template_name)
+    template_path = root_path +
+                    "/" +
+                    "views/" +
+                    self.class.to_s.underscore +
+                    "/" +
+                    template_name.to_s +
+                    ".html.erb"
+
+    template = ERB.new(File.read(template_path))
+    render_content(template.result, "text/html")
   end
 
   # method exposing a `Session` object
@@ -50,9 +60,20 @@ class ControllerBase
   def invoke_action(name)
   end
 
-  private
+  # private
 
   def ensure_no_double_render
     raise "double render!" if already_built_response?
   end
+
+  def root_path
+    File.expand_path(Dir.pwd)
+  end
 end
+
+
+# class UsersController < ControllerBase
+#   def index
+#   end
+# end
+# UsersController.new.render(:index)
