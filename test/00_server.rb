@@ -14,12 +14,12 @@ class MyController < ControllerBase
     # render_content("hello world!", "text/html")
 
     # after you have template rendering, uncomment:
-   render :show
+   # render :show
 
     # after you have sessions going, uncomment:
-#    session["count"] ||= 0
-#    session["count"] += 1
-#    render :counting_show
+   session["count"] ||= 0
+   session["count"] += 1
+   render :counting_show
   end
 end
 
