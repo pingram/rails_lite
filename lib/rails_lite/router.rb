@@ -4,7 +4,11 @@ class Route
   attr_reader :pattern, :http_method, :controller_class, :action_name
 
   def initialize(pattern, http_method, controller_class, action_name)
-    @pattern = pattern
+    if pattern.is_a?(Regexp)
+      @pattern = pattern
+    else
+      @pattern = Regexp.new(pattern.to_s)
+    end
     @http_method = http_method
     @controller_class = controller_class
     @action_name = action_name
@@ -43,10 +47,12 @@ class Router
   attr_reader :routes
 
   def initialize
+    @routes = []
   end
 
   # simply adds a new route to the list of routes
   def add_route(pattern, method, controller_class, action_name)
+    @routes << Route.new(pattern, method, controller_class, action_name)
   end
 
   # evaluate the proc in the context of the instance
@@ -61,10 +67,14 @@ class Router
 
   # should return the route that matches this request
   def match(req)
+    @routes.select do |route|
+      route.matches?(req)
+    end.first
   end
 
   # either throw 404 or call run on a matched route
   def run(req, res)
+    res.status = 404 if self.match(req).nil?
   end
 end
 
