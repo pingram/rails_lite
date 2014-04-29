@@ -1,5 +1,6 @@
 require 'erb'
 require 'active_support/inflector'
+require 'json'
 require_relative 'params'
 require_relative 'session'
 
@@ -55,6 +56,7 @@ class ControllerBase
 
   # method exposing a `Session` object
   def session
+
   end
 
   # use this with the router to call action_name (:index, :show, :create...)
@@ -78,3 +80,7 @@ end
 #   end
 # end
 # UsersController.new.render(:index)
+
+req = WEBrick::HTTPRequest.new(:Logger => nil)
+res = WEBrick::HTTPResponse.new(:HTTPVersion => '1.0')
+cookie = WEBrick::Cookie.new('_rails_lite_app', { :xyz=> 'abc' }.to_json)
