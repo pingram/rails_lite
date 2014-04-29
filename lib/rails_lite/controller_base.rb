@@ -20,7 +20,7 @@ class ControllerBase
   # later raise an error if the developer tries to double render
   def render_content(content, type)
     ensure_no_double_render
-    @session.store_session(res)
+    session.store_session(res)
 
     @res.content_type = type
     @res.body = content
@@ -35,7 +35,7 @@ class ControllerBase
   # set the response status code and header
   def redirect_to(url)
     ensure_no_double_render
-    @session.store_session(res)
+    session.store_session(res)
 
     @res.status = 302
     @res.header["location"] = url
@@ -86,6 +86,6 @@ end
 # end
 # UsersController.new.render(:index)
 
-req = WEBrick::HTTPRequest.new(:Logger => nil)
-res = WEBrick::HTTPResponse.new(:HTTPVersion => '1.0')
-cookie = WEBrick::Cookie.new('_rails_lite_app', { :xyz=> 'abc' }.to_json)
+# req = WEBrick::HTTPRequest.new(:Logger => nil)
+# res = WEBrick::HTTPResponse.new(:HTTPVersion => '1.0')
+# cookie = WEBrick::Cookie.new('_rails_lite_app', { :xyz=> 'abc' }.to_json)
