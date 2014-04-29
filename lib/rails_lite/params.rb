@@ -10,7 +10,10 @@ class Params
   # 3. route params
   def initialize(req, route_params = {})
     @params = {}
+    @permitted = []
     parse_www_encoded_form(req.query_string)
+    parse_post_body(req)
+    parse_route_params(route_params)
   end
 
   def [](key)
@@ -18,12 +21,16 @@ class Params
   end
 
   def permit(*keys)
+    @permitted += keys
   end
 
   def require(key)
+    raise AttributeNotFoundError.new unless @params.include?(key)
   end
 
   def permitted?(key)
+    return true if @permitted.include?(key)
+    false
   end
 
   def to_s
@@ -31,7 +38,18 @@ class Params
 
   class AttributeNotFoundError < ArgumentError; end;
 
-  # private
+  private
+
+  def parse_post_body(req)
+    parse_www_encoded_form(req.body)
+  end
+
+  def parse_route_params(route_params)
+    route_params.each do |key, value|
+      @params[key] = value
+    end
+  end
+
   # this should return deeply nested hash
   # argument format
   # user[address][street]=main&user[address][zip]=89436
