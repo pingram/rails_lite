@@ -49,7 +49,8 @@ class ControllerBase
                     ".html.erb"
 
     template = ERB.new(File.read(template_path))
-    render_content(template.result, "text/html")
+    template_result = template.result(binding)
+    render_content(template_result, "text/html")
   end
 
   # method exposing a `Session` object
