@@ -3,6 +3,7 @@ require 'active_support/inflector'
 require 'json'
 require_relative 'params'
 require_relative 'session'
+# require 'debugger'
 
 
 class ControllerBase
@@ -12,6 +13,8 @@ class ControllerBase
   def initialize(req, res, route_params = {})
     @req = req
     @res = res
+    # debugger
+    @params = Params.new(req, route_params)
     @already_built_response = false
   end
 
@@ -54,6 +57,10 @@ class ControllerBase
                     ".html.erb"
 
     template = ERB.new(File.read(template_path))
+    # @route_params.each do |key, val|
+    #   key.constantize = val
+    # end
+    # p @route_params
     template_result = template.result(binding)
     render_content(template_result, "text/html")
   end
@@ -66,6 +73,7 @@ class ControllerBase
 
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
+    debugger
     self.send(name)
     render(name) unless already_built_response?
   end

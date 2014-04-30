@@ -1,4 +1,5 @@
-# require 'ndebug'
+# require 'debugger'
+require 'webrick'
 
 class Route
   attr_reader :pattern, :http_method, :controller_class, :action_name
@@ -29,17 +30,15 @@ class Route
   # use pattern to pull out route params (save for later?)
   # instantiate controller and call controller action
   def run(req, res)
-    all_route_params = req.path.gsub(@pattern, '')
-    route_path = req.path.gsub(all_route_params, '')
-    route_params = {}
-    # XXX come back to this
+    path_params = {}
+    mdata = @pattern.match(req.path)
 
-    # p route_params
-    # need to call constantize to get the class name
-    # controller_class_str = (route_path.gsub('/','') + "_controller").classify
-    my_controller = @controller_class.new(req, res, route_params)
+    mdata.names.each do |mdatum|
+      path_params[mdatum] = mdata[mdatum]
+    end
+
+    my_controller = @controller_class.new(req, res, path_params)
     my_controller.invoke_action(@action_name)
-
   end
 end
 
@@ -88,7 +87,11 @@ class Router
   end
 end
 
-# p index_route = Route.new(Regexp.new("^/users$"), :get, "x", :x)
+# index_route = Route.new(Regexp.new("^/statuses/(?<id>\\d+)$"), :get, "x", :x)
+# req = WEBrick::HTTPRequest.new(:Logger => nil, :path => '/statuses/1')
+# res = WEBrick::HTTPResponse.new(:HTTPVersion => '1.0')
+# p req.path
+# index_route.run(req, res)
 # class StatusesController; end
 
 # router = Router.new
